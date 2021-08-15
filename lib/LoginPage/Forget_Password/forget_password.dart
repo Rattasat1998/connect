@@ -2,6 +2,7 @@ import 'package:connnection/LoginPage/Forget_Password/verify_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:ui';
 
 class Forget extends StatefulWidget {
   const Forget({Key? key}) : super(key: key);
@@ -13,7 +14,6 @@ class Forget extends StatefulWidget {
 class _ForgetState extends State<Forget> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -27,30 +27,45 @@ class _ForgetState extends State<Forget> {
                   child: Row(
                     children: [
                       GestureDetector(
-                          child: Icon(Icons.arrow_back,size: 30,),
-                        onTap: (){
-                            Navigator.pop(context);
+                        child: Icon(
+                          Icons.arrow_back,
+                          size: 30,
+                        ),
+                        onTap: () {
+                          Navigator.pop(context);
                         },
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 30,),
+                SizedBox(
+                  height: 30,
+                ),
                 buildHeader(),
-                SizedBox(height: 15,),
+                SizedBox(
+                  height: 15,
+                ),
                 buildSubHeader(),
-                SizedBox(height: 40,),
+                SizedBox(
+                  height: 40,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     buildFirstdot(),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     buildCenterdot(),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     buildLastdot(),
                   ],
                 ),
-                SizedBox(height: 40,),
+                SizedBox(
+                  height: 40,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
@@ -61,20 +76,27 @@ class _ForgetState extends State<Forget> {
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(40),
                           topLeft: Radius.circular(40),
-                        )
-                    ),
+                        )),
                     child: Column(
                       children: [
-                        SizedBox(height: 30,),
+                        SizedBox(
+                          height: 30,
+                        ),
                         buildTextFieldEmail(),
-                        SizedBox(height: 50,),
+                        SizedBox(
+                          height: 50,
+                        ),
                         buildLoginButton(),
-                        SizedBox(height: 20,),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             buildneverMind(),
-                            SizedBox(width: 20,),
+                            SizedBox(
+                              width: 20,
+                            ),
                             buildRemember()
                           ],
                         )
@@ -82,7 +104,6 @@ class _ForgetState extends State<Forget> {
                     ),
                   ),
                 ),
-
               ],
             ),
           ],
@@ -91,7 +112,7 @@ class _ForgetState extends State<Forget> {
     );
   }
 
-  Text buildHeader(){
+  Text buildHeader() {
     return Text(
       'Forget Your Password',
       style: GoogleFonts.lato(
@@ -104,7 +125,7 @@ class _ForgetState extends State<Forget> {
     );
   }
 
-  Text buildSubHeader(){
+  Text buildSubHeader() {
     return Text(
       'Please Enter Your Email Address To Receive a Verification Code ',
       style: GoogleFonts.lato(
@@ -116,20 +137,21 @@ class _ForgetState extends State<Forget> {
     );
   }
 
-  CircleAvatar buildFirstdot(){
+  CircleAvatar buildFirstdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black,
     );
   }
-  CircleAvatar buildCenterdot(){
+
+  CircleAvatar buildCenterdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black54,
     );
   }
 
-  CircleAvatar buildLastdot(){
+  CircleAvatar buildLastdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black54,
@@ -156,21 +178,20 @@ class _ForgetState extends State<Forget> {
       ),
       child: TextField(
         decoration: InputDecoration(
-          prefixIcon: Icon(
-            Icons.email,
-            color: Colors.black54,
-          ),
-          hintStyle: TextStyle(fontSize: 17, color: Colors.black54),
-          hintText: 'Email Address',
-          border: InputBorder.none,
-          isDense: false
-        ),
+            prefixIcon: Icon(
+              Icons.email,
+              color: Colors.black54,
+            ),
+            hintStyle: TextStyle(fontSize: 17, color: Colors.black54),
+            hintText: 'Email Address',
+            border: InputBorder.none,
+            isDense: false),
       ),
     );
   }
 
   /// SUBMIT BUTTON
-  Container buildLoginButton(){
+  Container buildLoginButton() {
     return Container(
       width: 200,
       height: 50,
@@ -178,7 +199,7 @@ class _ForgetState extends State<Forget> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32.0),
             gradient:
-            LinearGradient(colors: [Colors.orange, Colors.deepOrange])),
+                LinearGradient(colors: [Colors.orange, Colors.deepOrange])),
         child: ElevatedButton(
           child: Text(
             "Submit",
@@ -194,7 +215,6 @@ class _ForgetState extends State<Forget> {
             context,
             PageRouteBuilder(pageBuilder: (_, __, ___) => Verification()),
           ),
-
           style: ElevatedButton.styleFrom(
             primary: Colors.transparent,
             shape: RoundedRectangleBorder(
@@ -206,31 +226,34 @@ class _ForgetState extends State<Forget> {
     );
   }
 
-  Text buildneverMind(){
-    return Text('Nevermind',
+  Text buildneverMind() {
+    return Text(
+      'Nevermind',
       style: GoogleFonts.lato(
           textStyle: Theme.of(context).textTheme.bodyText1,
           fontSize: 15,
           fontWeight: FontWeight.w700,
           fontStyle: FontStyle.normal,
           color: Colors.white,
-          letterSpacing: 1),);
+          letterSpacing: 1),
+    );
   }
 
-  InkWell buildRemember(){
+  InkWell buildRemember() {
     return InkWell(
-      onTap: (){
+      onTap: () {
         Navigator.pop(context);
       },
-      child: Text('I remember it',
+      child: Text(
+        'I remember it',
         style: GoogleFonts.lato(
             textStyle: Theme.of(context).textTheme.bodyText1,
             fontSize: 15,
             fontWeight: FontWeight.w700,
             fontStyle: FontStyle.normal,
             color: Colors.blue,
-            letterSpacing: 1),),
+            letterSpacing: 1),
+      ),
     );
   }
-
 }

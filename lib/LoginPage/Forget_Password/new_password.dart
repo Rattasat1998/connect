@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'dart:ui';
 import '../login_page.dart';
 
 class NewPassword extends StatefulWidget {
@@ -12,7 +12,6 @@ class NewPassword extends StatefulWidget {
 }
 
 class _NewPasswordState extends State<NewPassword> {
-
   bool _passwordVisible = false;
   TextEditingController passController = TextEditingController();
   TextEditingController newPassController = TextEditingController();
@@ -32,30 +31,45 @@ class _NewPasswordState extends State<NewPassword> {
                   child: Row(
                     children: [
                       GestureDetector(
-                        child: Icon(Icons.arrow_back,size: 30,),
-                        onTap: (){
+                        child: Icon(
+                          Icons.arrow_back,
+                          size: 30,
+                        ),
+                        onTap: () {
                           Navigator.pop(context);
                         },
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 30,),
+                SizedBox(
+                  height: 30,
+                ),
                 buildHeader(),
-                SizedBox(height: 15,),
+                SizedBox(
+                  height: 15,
+                ),
                 buildSubHeader(),
-                SizedBox(height: 40,),
+                SizedBox(
+                  height: 40,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     buildFirstdot(),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     buildCenterdot(),
-                    SizedBox(width: 10,),
+                    SizedBox(
+                      width: 10,
+                    ),
                     buildLastdot(),
                   ],
                 ),
-                SizedBox(height: 40,),
+                SizedBox(
+                  height: 40,
+                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
@@ -68,15 +82,20 @@ class _NewPasswordState extends State<NewPassword> {
                           topLeft: Radius.circular(40),
                           bottomRight: Radius.circular(40),
                           bottomLeft: Radius.circular(40),
-                        )
-                    ),
+                        )),
                     child: Column(
                       children: [
-                        SizedBox(height: 30,),
+                        SizedBox(
+                          height: 30,
+                        ),
                         buildTextFieldPassword(),
-                        SizedBox(height: 30,),
+                        SizedBox(
+                          height: 30,
+                        ),
                         buildTextFieldNewPassword(),
-                        SizedBox(height: 50,),
+                        SizedBox(
+                          height: 50,
+                        ),
                         buildResetPasswordButton()
                       ],
                     ),
@@ -90,7 +109,7 @@ class _NewPasswordState extends State<NewPassword> {
     );
   }
 
-  Text buildHeader(){
+  Text buildHeader() {
     return Text(
       'Create New Password',
       style: GoogleFonts.lato(
@@ -103,7 +122,7 @@ class _NewPasswordState extends State<NewPassword> {
     );
   }
 
-  Text buildSubHeader(){
+  Text buildSubHeader() {
     return Text(
       'new password must be different from previously uses password',
       style: GoogleFonts.lato(
@@ -115,20 +134,21 @@ class _NewPasswordState extends State<NewPassword> {
     );
   }
 
-  CircleAvatar buildFirstdot(){
-    return CircleAvatar(
-      radius: 7,
-      backgroundColor: Colors.black54,
-    );
-  }
-  CircleAvatar buildCenterdot(){
+  CircleAvatar buildFirstdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black54,
     );
   }
 
-  CircleAvatar buildLastdot(){
+  CircleAvatar buildCenterdot() {
+    return CircleAvatar(
+      radius: 7,
+      backgroundColor: Colors.black54,
+    );
+  }
+
+  CircleAvatar buildLastdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black,
@@ -187,7 +207,6 @@ class _NewPasswordState extends State<NewPassword> {
     );
   }
 
-
   Container buildTextFieldNewPassword() {
     return Container(
       width: 300,
@@ -241,7 +260,7 @@ class _NewPasswordState extends State<NewPassword> {
   }
 
   /// Reset Password BUTTON
-  Container buildResetPasswordButton(){
+  Container buildResetPasswordButton() {
     return Container(
       width: 220,
       height: 50,
@@ -249,7 +268,7 @@ class _NewPasswordState extends State<NewPassword> {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32.0),
             gradient:
-            LinearGradient(colors: [Colors.orange, Colors.deepOrange])),
+                LinearGradient(colors: [Colors.orange, Colors.deepOrange])),
         child: ElevatedButton(
           child: Text(
             "Reset Password",
@@ -265,7 +284,6 @@ class _NewPasswordState extends State<NewPassword> {
             context,
             PageRouteBuilder(pageBuilder: (_, __, ___) => Login()),
           ),
-
           style: ElevatedButton.styleFrom(
             primary: Colors.transparent,
             shape: RoundedRectangleBorder(
@@ -276,5 +294,4 @@ class _NewPasswordState extends State<NewPassword> {
       ),
     );
   }
-
 }

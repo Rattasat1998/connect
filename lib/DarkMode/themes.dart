@@ -1,21 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'dart:ui';
 
-final darkTheme = ThemeData(
-  primarySwatch: Colors.grey,
-  primaryColor: Colors.black,
-  brightness: Brightness.dark,
-  backgroundColor: const Color(0xFF212121),
-  accentColor: Colors.white,
-  accentIconTheme: IconThemeData(color: Colors.black),
-  dividerColor: Colors.black12,
-);
+final ThemeData themeDataLight = new ThemeData(
+    brightness: Brightness.light,
+    primaryColorLight: Color(0xff1D2229),
+    primaryColor: Colors.white,
+    primaryColorBrightness: Brightness.light,
+    scaffoldBackgroundColor: Colors.grey[200],
+    accentColor: Color(0xff1D2229),
+    buttonColor: Colors.black,
+    accentColorBrightness: Brightness.light,
+    appBarTheme: AppBarTheme(
+      color: Colors.white,
+      centerTitle: true,
+    ));
 
-final lightTheme = ThemeData(
-  primarySwatch: Colors.grey,
-  primaryColor: Colors.white,
-  brightness: Brightness.light,
-  backgroundColor: const Color(0xFFE5E5E5),
-  accentColor: Colors.black,
-  accentIconTheme: IconThemeData(color: Colors.white),
-  dividerColor: Colors.white54,
-);
+final ThemeData themeDataDark = ThemeData(
+    brightness: Brightness.dark,
+    primaryColor: Colors.black,
+    primaryColorBrightness: Brightness.dark,
+    scaffoldBackgroundColor: Color(0xff353a3f),
+    accentColor: Color(0xff1D2229),
+    accentColorBrightness: Brightness.dark,
+    appBarTheme: AppBarTheme(
+      color: Colors.black54,
+      centerTitle: true,
+    ));

@@ -1,0 +1,4 @@
+enum NavigatorItem {
+  priceUp,
+  priceDown,
+}

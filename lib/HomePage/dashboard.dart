@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'Index/index0.dart';
+import 'Index/index1.dart';
+import 'icons.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -15,9 +18,7 @@ class _DashboardState extends State<Dashboard> {
 
   static List<Widget> _widgetOptions = <Widget>[
     Index0(),
-    Text(
-      'Index 1',
-    ),
+    Index1(),
     Text(
       'Index 2',
     ),
@@ -35,51 +36,51 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: _widgetOptions.elementAt(_selectedIndex),
+      body: CupertinoTabScaffold(
+        tabBar: CupertinoTabBar(
+          items: [
+            BottomNavigationBarItem(
+              icon: Image.asset('assets/icons/home1.png'),
+              title: Text('หน้าหลัก',style:TextStyle(fontFamily: 'Prompt-Light',fontSize: 11.0, fontWeight: FontWeight.bold)),
+              activeIcon: Image.asset('assets/icons/home2.png')
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('assets/icons/message1.png'),
+              title: Text('ข้อความ',style:TextStyle(fontFamily: 'Prompt-Light',fontSize: 11.0, fontWeight: FontWeight.bold)),
+                activeIcon: Image.asset('assets/icons/message2.png', )
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('assets/icons/mark1.png',),
+              title: Text('ตลาดต่างๆ',style:TextStyle(fontFamily: 'Prompt-Light',fontSize: 11.0, fontWeight: FontWeight.bold)),
+                activeIcon: Image.asset('assets/icons/mark2.png',)
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('assets/icons/payment1.png'),
+              title: Text('การชำระเงิน',style:TextStyle(fontFamily: 'Prompt-Light',fontSize: 11.0, fontWeight: FontWeight.bold)),
+                activeIcon: Image.asset('assets/icons/payment2.png')
+            ),
+            BottomNavigationBarItem(
+              icon: Image.asset('assets/icons/employment1.png'),
+              title: Text('จ้างงาน',style:TextStyle(fontFamily: 'Prompt-Light',fontSize: 11.0, fontWeight: FontWeight.bold)),
+                activeIcon: Image.asset('assets/icons/employment2.png')
+            ),
+          ],
+          onTap: _onItemTapped,
+          iconSize: 10,
+          backgroundColor: Color(0xff1c2229),
+          currentIndex: _selectedIndex,
+          activeColor: Color(0xffffbb00),
+
         ),
+
+        tabBuilder: (context, index) {
+          return _widgetOptions.elementAt(_selectedIndex);
+        },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Colors.black87,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message),
-            label: 'Message',
-            backgroundColor: Colors.black87,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_bag_outlined),
-            label: 'Market',
-            backgroundColor: Colors.black87,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.payment),
-            label: 'Payment',
-            backgroundColor: Colors.black87,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group_work),
-            label: 'Hire',
-            backgroundColor: Colors.black87,
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.orange,
-        showUnselectedLabels: true,
-        showSelectedLabels: true,
-        selectedFontSize: 18,
-        selectedLabelStyle: TextStyle(color: Colors.orange),
-        onTap: _onItemTapped,
-      ),
+
     );
   }
 }

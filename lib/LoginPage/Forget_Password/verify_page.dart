@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -16,7 +16,6 @@ class Verification extends StatefulWidget {
 }
 
 class _VerificationState extends State<Verification> {
-
   TextEditingController textEditingController = TextEditingController();
   StreamController<ErrorAnimationType>? errorController;
 
@@ -46,7 +45,6 @@ class _VerificationState extends State<Verification> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,70 +58,92 @@ class _VerificationState extends State<Verification> {
               child: Row(
                 children: [
                   GestureDetector(
-                    child: Icon(Icons.arrow_back,size: 30,),
-                    onTap: (){
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                    ),
+                    onTap: () {
                       Navigator.pop(context);
                     },
                   ),
                 ],
               ),
             ),
-
-            SizedBox(height: 30,),
+            SizedBox(
+              height: 30,
+            ),
             buildHeader(),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             buildSubHeader(),
             buildSubsubHeader(),
-
-            SizedBox(height: 40,),
+            SizedBox(
+              height: 40,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 buildFirstdot(),
-                SizedBox(width: 10,),
+                SizedBox(
+                  width: 10,
+                ),
                 buildCenterdot(),
-                SizedBox(width: 10,),
+                SizedBox(
+                  width: 10,
+                ),
                 buildLastdot(),
               ],
             ),
-            SizedBox(height: 40,),
+            SizedBox(
+              height: 40,
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width/2,
+                height: MediaQuery.of(context).size.width / 2,
                 decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(40),
-                      topLeft: Radius.circular(40),
-                      bottomLeft: Radius.circular(40),
-                      bottomRight: Radius.circular(40),
-                    ),
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(40),
+                    topLeft: Radius.circular(40),
+                    bottomLeft: Radius.circular(40),
+                    bottomRight: Radius.circular(40),
+                  ),
                 ),
                 child: Column(
                   children: [
-                    SizedBox(height: 20,),
-                    Text('Verification code',
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Verification code',
                       style: GoogleFonts.lato(
                           textStyle: Theme.of(context).textTheme.bodyText1,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.normal,
                           color: Colors.white,
-                          letterSpacing: 1),),
-                    SizedBox(height: 7,),
+                          letterSpacing: 1),
+                    ),
+                    SizedBox(
+                      height: 7,
+                    ),
                     buildForm(),
-                    SizedBox(height: 2,),
-                    Text('Resend Email : 30 s',
+                    SizedBox(
+                      height: 2,
+                    ),
+                    Text(
+                      'Resend Email : 30 s',
                       style: GoogleFonts.lato(
                           textStyle: Theme.of(context).textTheme.bodyText1,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           fontStyle: FontStyle.normal,
                           color: Colors.white,
-                          letterSpacing: 1),),
-
+                          letterSpacing: 1),
+                    ),
                   ],
                 ),
               ),
@@ -134,7 +154,7 @@ class _VerificationState extends State<Verification> {
     );
   }
 
-  Text buildHeader(){
+  Text buildHeader() {
     return Text(
       'Verification',
       style: GoogleFonts.lato(
@@ -147,7 +167,7 @@ class _VerificationState extends State<Verification> {
     );
   }
 
-  Text buildSubHeader(){
+  Text buildSubHeader() {
     return Text(
       'Please enter the 6-digit verification code that was',
       style: GoogleFonts.lato(
@@ -158,7 +178,8 @@ class _VerificationState extends State<Verification> {
           letterSpacing: 1),
     );
   }
-  Text buildSubsubHeader(){
+
+  Text buildSubsubHeader() {
     return Text(
       'send to ...@gmail.com The code is valid for 30 minutes.',
       style: GoogleFonts.lato(
@@ -170,35 +191,33 @@ class _VerificationState extends State<Verification> {
     );
   }
 
-  CircleAvatar buildFirstdot(){
+  CircleAvatar buildFirstdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black54,
     );
   }
-  CircleAvatar buildCenterdot(){
+
+  CircleAvatar buildCenterdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black,
     );
   }
 
-  CircleAvatar buildLastdot(){
+  CircleAvatar buildLastdot() {
     return CircleAvatar(
       radius: 7,
       backgroundColor: Colors.black54,
     );
   }
 
-  Form buildForm(){
+  Form buildForm() {
     return Form(
       key: formKey,
       child: Padding(
-          padding: const EdgeInsets.symmetric(
-              vertical: 8.0, horizontal: 30),
-
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 30),
           child: PinCodeTextField(
-
             enablePinAutofill: false,
             keyboardAppearance: Brightness.dark,
             length: 6,
@@ -222,14 +241,13 @@ class _VerificationState extends State<Verification> {
               }
             },
             pinTheme: PinTheme(
-              borderWidth:1.0,
-              borderRadius: BorderRadius.circular(10.0),
-              shape: PinCodeFieldShape.box,
-              fieldHeight: 50,
-              fieldWidth: 40,
-              //activeFillColor: Colors.white
-              activeColor: Colors.black
-            ),
+                borderWidth: 1.0,
+                borderRadius: BorderRadius.circular(10.0),
+                shape: PinCodeFieldShape.box,
+                fieldHeight: 50,
+                fieldWidth: 40,
+                //activeFillColor: Colors.white
+                activeColor: Colors.black),
             cursorColor: Colors.black,
             animationDuration: Duration(milliseconds: 300),
             enableActiveFill: true,
@@ -243,14 +261,12 @@ class _VerificationState extends State<Verification> {
               )
             ],
             onCompleted: (v) {
-
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(pageBuilder: (_, __, ___) => NewPassword()),
-                );
+              Navigator.push(
+                context,
+                PageRouteBuilder(pageBuilder: (_, __, ___) => NewPassword()),
+              );
 
               print("Completed");
-
             },
             // onTap: () {
             //   print("Pressed");
@@ -270,5 +286,4 @@ class _VerificationState extends State<Verification> {
           )),
     );
   }
-
 }

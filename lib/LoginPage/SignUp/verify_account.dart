@@ -1,15 +1,15 @@
 import 'dart:async';
-
-import 'package:connnection/HomePage/dashboard.dart';
+import 'package:connnection/Service/service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
 import '../login_page.dart';
 
 class VerificationAccount extends StatefulWidget {
-  const VerificationAccount({Key? key}) : super(key: key);
+  final String username,email,password;
+  const VerificationAccount({Key? key, required this.username, required this.email, required this.password}) : super(key: key);
 
   @override
   _VerificationState createState() => _VerificationState();
@@ -19,7 +19,13 @@ class _VerificationState extends State<VerificationAccount> {
 
   TextEditingController textEditingController = TextEditingController();
   StreamController<ErrorAnimationType>? errorController;
-
+  String photo = 'uploads/2021-08-10T07:27:39.502Zimage_picker_2D79E2BB-CE57-4818-9C5C-0DD3BFDD1C8E-5066-00000D832E3391B4.jpg';
+  String age = '0';
+  String address = 'กรุณาใส่ที่อยู่';
+  String follow = '0';
+  String like = '0';
+  String rate = '0';
+  String status = 'ผู้ใช้';
   bool hasError = false;
   String currentText = "";
   final formKey = GlobalKey<FormState>();
@@ -41,7 +47,7 @@ class _VerificationState extends State<VerificationAccount> {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message!),
-        duration: Duration(seconds: 2),
+        duration: Duration(seconds: 5),
       ),
     );
   }
@@ -90,8 +96,8 @@ class _VerificationState extends State<VerificationAccount> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width/2,
+                height: 250,
+                width: 400,
                 decoration: BoxDecoration(
                   color: Colors.black87,
                   borderRadius: BorderRadius.only(
@@ -243,12 +249,32 @@ class _VerificationState extends State<VerificationAccount> {
               )
             ],
             onCompleted: (v) {
+              if(v == textEditingController.text){
+                AuthService().addUser(
+                    widget.username,
+                    photo,
+                    age,
+                    widget.email,
+                    address,
+                    widget.password,
+                    follow,
+                    like,
+                    rate,
+                    status
+                )
+                    .then((val){
+                  snackBar("สมัคร สมาชิกสำเร็จ");
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(pageBuilder: (_, __, ___) => Login()),
+                  );
+                });
 
-              Navigator.push(
-                context,
-                PageRouteBuilder(pageBuilder: (_, __, ___) => Login()),
-              );
+              }
+              else{
+                print("Error to Register");
 
+              }
               print("Completed");
 
             },

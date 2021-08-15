@@ -1,8 +1,9 @@
 import 'package:connnection/LoginPage/login_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:email_auth/email_auth.dart';
 import 'confirm_email.dart';
 
 class Signup extends StatefulWidget {
@@ -13,121 +14,137 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
-  bool _passwordVisible = false;
+
+  bool _passwordVisible1 = false;
+  bool _passwordVisible2 = false;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  TextEditingController repeatPassController = TextEditingController();
   TextEditingController newPassController = TextEditingController();
+
+  var username, email, password;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-          child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-              width: double.infinity,
-              height: 50,
-              child: Row(
-                children: [
-                  GestureDetector(
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 30,
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 30,
-            ),
-            buildHeader(),
-            SizedBox(
-              height: 15,
-            ),
-            buildSubHeader(),
-            SizedBox(
-              height: 15,
-            ),
-            buildSubsubHeader(),
-            SizedBox(
-              height: 40,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                buildFirstdot(),
-                SizedBox(
-                  width: 10,
-                ),
-                buildCenterdot(),
-                SizedBox(
-                  width: 10,
-                ),
-                buildLastdot(),
-              ],
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height/1.5,
-                decoration: BoxDecoration(
-                    color: Colors.black87,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(40),
-                      topLeft: Radius.circular(40),
-                    )),
-                child: Column(
+    Size screenSize = MediaQuery.of(context).size;
+    return SafeArea(
+      child: Scaffold(
+        body:  Column(
+            children: [
+              Container(
+                margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                width: double.infinity,
+                height: 50,
+                child: Row(
                   children: [
-                    SizedBox(
-                      height: 30,
+                    GestureDetector(
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 30,
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                     ),
-                    buildTextFieldUsername(),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    buildTextFieldEmail(),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    buildTextFieldPassword(),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    buildTextFieldNewPassword(),
-                    SizedBox(
-                      height: 30,
-                    ),
-                    buildNextButton(), /// NEXT
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        buildneverMind(),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        buildRemember()
-                      ],
-                    )
                   ],
                 ),
               ),
-            ),
-          ],
-        ),
-      )),
+              Container(
+                  height: screenSize.height/1.2,
+                  width: screenSize.width,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      buildHeader(),
+                      buildSubHeader(),
+                      buildSubsubHeader(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          buildFirstdot(),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          buildCenterdot(),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          buildLastdot(),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          height: screenSize.height/1.9,
+                          width: 400,
+                          decoration: BoxDecoration(
+                              color: Colors.black87,
+                              borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(40),
+                                topLeft: Radius.circular(40),
+                              )),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Container(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: buildTextFieldUsername(),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: buildTextFieldEmail(),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: buildTextFieldPassword(),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: buildTextFieldNewPassword(),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: buildNextButton(),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            buildneverMind(),
+                                            SizedBox(
+                                              width: 20,
+                                            ),
+                                            buildRemember()
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+
+
+                                /// NEXT
+
+
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+
+            ],
+          ),
+      ),
     );
   }
 
@@ -189,9 +206,13 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  /// USERNAME
   Container buildTextFieldUsername() {
+    Size screenSize = MediaQuery.of(context).size;
     return Container(
-      width: 300,
+      height: screenSize.height/16,
+      width: screenSize.width,
+
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -208,6 +229,10 @@ class _SignupState extends State<Signup> {
         borderRadius: BorderRadius.circular(30),
       ),
       child: TextField(
+        controller: nameController,
+        onChanged: (val) {
+          username = val;
+        },
         decoration: InputDecoration(
             prefixIcon: Icon(
               Icons.account_box,
@@ -221,9 +246,12 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  /// EMAIL
   Container buildTextFieldEmail() {
+    Size screenSize = MediaQuery.of(context).size;
     return Container(
-      width: 300,
+      height: screenSize.height/16,
+      width: screenSize.width,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -239,7 +267,22 @@ class _SignupState extends State<Signup> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(30),
       ),
-      child: TextField(
+      child: TextFormField(
+        controller: emailController,
+        onChanged: (val) {
+          email = val;
+        },
+        validator: (value) {
+          if (value!.isEmpty) {
+            return 'Enter your Email';
+          } else if (RegExp(
+              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+              .hasMatch(value)) {
+            return null;
+          } else {
+            return "ใส่ อีเมล ให้ถูกต้อง";
+          }
+        },
         decoration: InputDecoration(
             prefixIcon: Icon(
               Icons.email,
@@ -253,9 +296,12 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  /// PASSWORD
   Container buildTextFieldPassword() {
+    Size screenSize = MediaQuery.of(context).size;
     return Container(
-      width: 300,
+      height: screenSize.height/16,
+      width: screenSize.width,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -272,11 +318,11 @@ class _SignupState extends State<Signup> {
         borderRadius: BorderRadius.circular(32),
       ),
       child: TextField(
-        obscureText: _passwordVisible,
+        obscureText: _passwordVisible1,
         controller: passController,
         keyboardType: TextInputType.visiblePassword,
         onChanged: (value) {
-          value = passController.text;
+          password = value;
         },
         decoration: InputDecoration(
           prefixIcon: Icon(
@@ -290,13 +336,13 @@ class _SignupState extends State<Signup> {
           suffixIcon: IconButton(
             icon: Icon(
               // Based on passwordVisible state choose the icon
-              _passwordVisible ? Icons.visibility : Icons.visibility_off,
+              _passwordVisible1 ? Icons.visibility : Icons.visibility_off,
               color: Colors.black54,
             ),
             onPressed: () {
               // Update the state i.e. toogle the state of passwordVisible variable
               setState(() {
-                _passwordVisible = !_passwordVisible;
+                _passwordVisible1 = !_passwordVisible1;
               });
             },
           ),
@@ -305,9 +351,12 @@ class _SignupState extends State<Signup> {
     );
   }
 
+  /// REPEAT PASSWORD
   Container buildTextFieldNewPassword() {
+    Size screenSize = MediaQuery.of(context).size;
     return Container(
-      width: 300,
+      height: screenSize.height/16,
+      width: screenSize.width,
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -324,8 +373,8 @@ class _SignupState extends State<Signup> {
         borderRadius: BorderRadius.circular(32),
       ),
       child: TextField(
-        obscureText: _passwordVisible,
-        controller: passController,
+        obscureText: _passwordVisible2,
+        controller: repeatPassController,
         keyboardType: TextInputType.visiblePassword,
         onChanged: (value) {
           value = passController.text;
@@ -342,13 +391,13 @@ class _SignupState extends State<Signup> {
           suffixIcon: IconButton(
             icon: Icon(
               // Based on passwordVisible state choose the icon
-              _passwordVisible ? Icons.visibility : Icons.visibility_off,
+              _passwordVisible2 ? Icons.visibility : Icons.visibility_off,
               color: Colors.black54,
             ),
             onPressed: () {
               // Update the state i.e. toogle the state of passwordVisible variable
               setState(() {
-                _passwordVisible = !_passwordVisible;
+                _passwordVisible2 = !_passwordVisible2;
               });
             },
           ),
@@ -359,23 +408,30 @@ class _SignupState extends State<Signup> {
 
   /// Next BUTTON
   Container buildNextButton() {
+    Size screenSize = MediaQuery.of(context).size;
     return Container(
-      width: 170,
-      height: 50,
+      height: screenSize.height/16,
+      width: screenSize.width/2,
       child: DecoratedBox(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(32.0),
             gradient:
-                LinearGradient(colors: [Colors.orange, Colors.deepOrange])),
+            LinearGradient(colors: [Colors.orange, Colors.deepOrange])),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(pageBuilder: (_, __, ___) => ConfirmEmail()),
-                  );
+                  if (password == repeatPassController.text) {
+                    Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                          pageBuilder: (_, __, ___) => ConfirmEmail(
+                              username: username,
+                              email: email,
+                              password: password)),
+                    );
+                  }
                 },
                 child: Text(
                   'Next',
