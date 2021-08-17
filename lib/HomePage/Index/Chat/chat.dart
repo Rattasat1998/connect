@@ -9,7 +9,6 @@ class Chat extends StatefulWidget {
 }
 
 class _ChatState extends State<Chat> {
-
   Future<bool> onBackPress() {
     return Future.value(false);
   }
@@ -39,7 +38,7 @@ class _ChatState extends State<Chat> {
                             size: 30,
                             color: Colors.white,
                           ),
-                          onTap: (){
+                          onTap: () {
                             Navigator.pop(context);
                           },
                         ),
@@ -83,7 +82,8 @@ class _ChatState extends State<Chat> {
                                     children: [
                                       Text('ออนไลน์',
                                           style: TextStyle(
-                                              fontSize: 12, color: Colors.white))
+                                              fontSize: 12,
+                                              color: Colors.white))
                                     ],
                                   ),
                                 ],
@@ -134,7 +134,6 @@ class _ChatState extends State<Chat> {
     ));
   }
 
-
   Widget buildInput() {
     return Container(
       child: Row(
@@ -157,54 +156,47 @@ class _ChatState extends State<Chat> {
                       child: Padding(
                         padding: const EdgeInsets.only(left: 10),
                         child: TextField(
-                          onSubmitted: (value) {
-                          },
+                          onSubmitted: (value) {},
                           style: TextStyle(fontSize: 18.0),
                           decoration: InputDecoration(
                             hintText: 'พิมพ์ข้อความ',
-                            hintStyle: TextStyle(color: Colors.white
-                            ),
+                            hintStyle: TextStyle(color: Colors.white),
                             border: InputBorder.none,
                             suffixIcon: Padding(
                               padding: const EdgeInsets.all(2.0),
                               child: CircleAvatar(
                                 backgroundColor: Colors.white,
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.camera_alt,color: Colors.black,
-                                  ),
-                                  
+                                // child: IconButton(
+                                //   icon: Icon(
+                                //     Icons.camera_alt,color: Colors.black,
+                                //   ),
                               ),
                             ),
                           ),
-
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    child: IconButton(
-                        icon: Icon(Icons.thumb_up_alt_rounded,color: Colors.yellow,),
-                        onPressed: () {}
-                    ),
-                  ),
-                  // Button plus
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(32),
-                        color: Colors.white),
-                      child: IconButton(
-                          icon: Icon(Icons.add),
-                          onPressed: () {}
-                      ),
-                    ),
-
-
+                  // Container(
+                  //   child: IconButton(
+                  //       icon: Icon(Icons.thumb_up_alt_rounded,color: Colors.yellow,),
+                  //       onPressed: () {}
+                  //   ),
+                  // ),
+                  // // Button plus
+                  // Container(
+                  //   decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(32),
+                  //       color: Colors.white),
+                  //     child: IconButton(
+                  //         icon: Icon(Icons.add),
+                  //         onPressed: () {}
+                  //     ),
+                  //   ),
                 ],
               ),
             ),
           ),
-
         ],
       ),
       width: double.infinity,
@@ -214,11 +206,10 @@ class _ChatState extends State<Chat> {
     );
   }
 
-
   Widget buildListMessage() {
     return Flexible(
-        flex: 1,
-      child:  Padding(
+      flex: 1,
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
@@ -238,24 +229,21 @@ class _ChatState extends State<Chat> {
                 ),
                 Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:Container(
-                      child: Text(
-                          'Hello Boy'
-                      ),
+                    child: Container(
+                      child: Text('Hello Boy'),
                       padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),color: Colors.black12),
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Colors.black12),
                       margin: EdgeInsets.only(left: 10.0),
-                    )
-                ),
+                    )),
                 Container(
                   child: Text(
                     '12:00',
-                    style: TextStyle(
-                        fontSize: 12.0, fontStyle: FontStyle.italic),
+                    style:
+                        TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
                   ),
-                  margin:
-                  EdgeInsets.only(left: 5.0, top: 5.0, bottom: 5.0),
+                  margin: EdgeInsets.only(left: 5.0, top: 5.0, bottom: 5.0),
                 )
               ],
             ),
@@ -267,24 +255,21 @@ class _ChatState extends State<Chat> {
                 Container(
                   child: Text(
                     '12:05',
-                    style: TextStyle(
-                        fontSize: 12.0, fontStyle: FontStyle.italic),
+                    style:
+                        TextStyle(fontSize: 12.0, fontStyle: FontStyle.italic),
                   ),
-                  margin:
-                  EdgeInsets.only(right: 5.0, top: 5.0, bottom: 5.0),
+                  margin: EdgeInsets.only(right: 5.0, top: 5.0, bottom: 5.0),
                 ),
                 Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child:Container(
-                      child: Text(
-                          'Hello Girl'
-                      ),
+                    child: Container(
+                      child: Text('Hello Girl'),
                       padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.0),color: Colors.black12),
+                          borderRadius: BorderRadius.circular(8.0),
+                          color: Colors.black12),
                       margin: EdgeInsets.only(left: 10.0),
-                    )
-                ),
+                    )),
                 CircleAvatar(
                   child: ClipOval(
                     child: Image.network(
@@ -295,13 +280,11 @@ class _ChatState extends State<Chat> {
                     ),
                   ),
                 ),
-
               ],
             ),
           ],
         ),
       ),
-
     );
   }
 }
