@@ -499,7 +499,6 @@ class _loginState extends State<Login> {
     return Container(
       width: 300,
       height: 45,
-
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
