@@ -30,120 +30,123 @@ class _SignupState extends State<Signup> {
     Size screenSize = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        body:  Column(
-            children: [
-              Container(
-                margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                width: double.infinity,
-                height: 50,
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      child: Icon(
-                        Icons.arrow_back,
-                        size: 30,
-                      ),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                  height: screenSize.height/1.2,
-                  width: screenSize.width,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body:  SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                  width: double.infinity,
+                  height: 50,
+                  child: Row(
                     children: [
-                      buildHeader(),
-                      buildSubHeader(),
-                      buildSubsubHeader(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          buildFirstdot(),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          buildCenterdot(),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          buildLastdot(),
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: screenSize.height/1.9,
-                          width: 400,
-                          decoration: BoxDecoration(
-                              color: Colors.black87,
-                              borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(40),
-                                topLeft: Radius.circular(40),
-                              )),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                Container(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: buildTextFieldUsername(),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: buildTextFieldEmail(),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: buildTextFieldPassword(),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: buildTextFieldNewPassword(),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: buildNextButton(),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            buildneverMind(),
-                                            SizedBox(
-                                              width: 20,
-                                            ),
-                                            buildRemember()
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-
-
-                                /// NEXT
-
-
-                              ],
-                            ),
-                          ),
+                      GestureDetector(
+                        child: Icon(
+                          Icons.arrow_back,
+                          size: 30,
                         ),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
                       ),
                     ],
                   ),
                 ),
+                Container(
+                    height: screenSize.height/1.2,
+                    width: screenSize.width,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        buildHeader(),
+                        buildSubHeader(),
+                        buildSubsubHeader(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            buildFirstdot(),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            buildCenterdot(),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            buildLastdot(),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Container(
+                            height: screenSize.height/1.9,
+                            width: 400,
+                            decoration: BoxDecoration(
+                                color: Colors.black87,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(40),
+                                  topLeft: Radius.circular(40),
+                                )),
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: buildTextFieldUsername(),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: buildTextFieldEmail(),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: buildTextFieldPassword(),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: buildTextFieldNewPassword(),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: buildNextButton(),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              buildneverMind(),
+                                              SizedBox(
+                                                width: 20,
+                                              ),
+                                              buildRemember()
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
 
 
-            ],
-          ),
+                                  /// NEXT
+
+
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+
+              ],
+            ),
+        ),
       ),
     );
   }

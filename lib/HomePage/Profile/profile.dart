@@ -1,196 +1,150 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:connnection/Core/Model/user.dart';
-import 'package:connnection/LoginPage/Provider_User.dart';
-import 'package:dio/dio.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connnection/HomePage/Profile/viewProfile.dart';
+import 'package:connnection/LoginPage/login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:line_icons/line_icons.dart';
-import 'package:path/path.dart';
-import 'package:async/async.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Profile extends StatefulWidget {
-  final String? name, address, id;
+  final profile;
 
-  const Profile({Key? key, this.name, this.address, this.id}) : super(key: key);
+  const Profile({
+    Key? key,
+    this.profile,
+  }) : super(key: key);
 
   @override
   _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  /// HTTP
-  late final MyProvider myProvider;
-  Dio dio = new Dio();
-  late final String? name, address;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  /// IMAGE
-  final _picker = ImagePicker();
-  late PickedFile pickedFile;
-  File? image;
-  var resultImage;
-
-  ///USER
-  User user = User();
-  bool isLoading = false;
-
-  bool scroll = false;
-  int speedFactor = 20;
+  bool _enabled = true;
 
   @override
   void initState() {
-    //myProvider = Provider.of<MyProvider>(context, listen: false);
-    getUsers();
-    // TODO: implement initState
     super.initState();
   }
 
-  Future updateImage() async {
-    print('Need to Update this : => $resultImage' + 'to go ${widget.id}');
-    await dio.post(
-      'https://connectiondatabase12.herokuapp.com/api/user/updateUser/${widget.id}',
-      data: {"photo": resultImage},
-      options: Options(
-        contentType: Headers.formUrlEncodedContentType,
-      ),
-    );
-    setState(() {
-      print('Updated Image Success!! ... ');
-      getUsers();
+  Future<Null> handleSignOut() async {
+    this.setState(() {
+      //isLoading = true;
     });
-  }
 
-  Future<User?> getUsers() async {
-    final response = await http
-        .get(Uri.parse('https://connectiondatabase12.herokuapp.com/api/user/${widget.id}'));
-    user = userFromJson(response.body);
-    print(user.name);
+    await FirebaseAuth.instance.signOut();
+    //await googleSignIn.disconnect();
+    //await googleSignIn.signOut();
+    await _auth.signOut();
 
-    return user;
-  }
-
-  _imgFromCamera() async {
-    final PickedFile? pickedFile =
-    await _picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      final File _image = File(pickedFile!.path);
-      image = _image;
-      //upload(_image);
+    this.setState(() {
+      //isLoading = false;
     });
-  }
 
-  _imgFromGallery() async {
-    final PickedFile? pickedFile = await _picker.getImage(
-        source: ImageSource.gallery, maxHeight: 500, maxWidth: 500);
-
-    setState(() {
-      final File _image = File(pickedFile!.path);
-      image = _image;
-      //upload(_image);
-    });
-  }
-
-  upload(File imageFile) async {
-    // open a bytestream
-    var stream =
-    new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
-    // get file length
-    var length = await imageFile.length();
-
-    // string to uri
-    var uri = Uri.parse("https://connectiondatabase12.herokuapp.com/upload");
-
-    // create multipart request
-    var request = new http.MultipartRequest("POST", uri);
-
-    // multipart that takes file
-    var multipartFile = new http.MultipartFile('myFile', stream, length,
-        filename: basename(imageFile.path));
-
-    // add file to multipart
-    request.files.add(multipartFile);
-    print('Uploading ...');
-    // send
-    var response = await request.send();
-    print(response.statusCode);
-
-    // listen for response
-    response.stream.transform(utf8.decoder).listen((value) {
-      setState(() {
-        resultImage = jsonDecode(value);
-      });
-    });
-    updateImage();
-  }
-
-  void _showPicker(context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext bc) {
-          return SafeArea(
-            child: Container(
-              child: new Wrap(
-                children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('แกลเลอรี่'),
-                      onTap: () {
-                        _imgFromGallery();
-                        Navigator.of(context).pop();
-                      }),
-                  new ListTile(
-                    leading: new Icon(Icons.photo_camera),
-                    title: new Text('กล้อง'),
-                    onTap: () {
-                      _imgFromCamera();
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => Login()),
+        (Route<dynamic> route) => false);
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
+        backgroundColor: Colors.grey[600],
         body: ListView(
+          shrinkWrap: true,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'บัญชีผู้ใช้',
-                style: GoogleFonts.lato(
-                    textStyle: Theme.of(context).textTheme.bodyText1,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.normal,
-                    letterSpacing: 2),
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+              width: double.infinity,
+              height: 50,
+              color: Color(0xff1c2229),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 30,
+                            color: Colors.white,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 100,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        CircleAvatar(
+                            radius: 13.5,
+                            backgroundColor: Color(0xff848587),
+                            child: Icon(
+                              Icons.search,
+                              color: Colors.black87,
+                            )),
+                        CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.transparent,
+                            child: Icon(
+                              Icons.notifications,
+                              color: Color(0xff848587),
+                              size: 29,
+                            )),
+                      ],
+                    ),
+                  )
+                ],
               ),
             ),
-            FutureBuilder(
-                future: getUsers(),
+            FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(widget.profile['id'])
+                    .get(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     var result = snapshot.data;
+                    print(result['name']);
                     return Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 20),
+                          child: Row(
+                            children: [
+                              Text(
+                                'บัญชีผู้ใช้',
+                                style: GoogleFonts.lato(
+                                    textStyle:TextStyle(color: Colors.white54),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    fontStyle: FontStyle.normal,
+                                    letterSpacing: 2),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 16),
                           child: Container(
                             width: MediaQuery.of(context).size.width,
                             height: 120,
                             decoration: BoxDecoration(
-                                color: Colors.black54,
+                                color: Color(0xff1c2229),
                                 borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(5),
                                   topLeft: Radius.circular(5),
@@ -200,96 +154,102 @@ class _ProfileState extends State<Profile> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Container(
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "${result.name}",
-                                                style: GoogleFonts.lato(
-                                                    textStyle: Theme.of(context)
-                                                        .textTheme
-                                                        .bodyText1,
-                                                    fontSize: 20,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontStyle: FontStyle.normal,
-                                                    color: Colors.white,
-                                                    letterSpacing: 1),
-                                              ),
-                                              Row(
-                                                children: [
-                                                  Container(
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.white54,
-                                                        borderRadius: BorderRadius.circular(20)),
-                                                    child: Padding(
-                                                      padding: const EdgeInsets.all(2.0),
-                                                      child: Row(
-                                                        children: [
-                                                          Icon(
-                                                            LineIcons.mapMarker,
-                                                            color: Colors.white,
-                                                            size: 15,
-                                                          ),
-                                                          Text(
-                                                            '${result.address}',
-                                                            style: GoogleFonts.lato(
-                                                                textStyle:
-                                                                Theme.of(context)
-                                                                    .textTheme
-                                                                    .bodyText1,
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                FontWeight.bold,
-                                                                fontStyle:
-                                                                FontStyle.normal,
-                                                                color: Colors.black ,
-                                                                letterSpacing: 1),
-                                                          ),
-                                                        ],
-                                                      ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 10, horizontal: 16),
+                                      child: Container(
+                                        child: Column(
+                                          children: [
+                                            Text(
+                                              "${result['name']}",
+                                              style: GoogleFonts.lato(
+                                                  textStyle: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyText1,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontStyle: FontStyle.normal,
+                                                  color: Colors.white,
+                                                  letterSpacing: 1),
+                                            ),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.white54,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20)),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            2.0),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          LineIcons.mapMarker,
+                                                          color: Colors.white,
+                                                          size: 15,
+                                                        ),
+                                                        Text(
+                                                          '${result['address']}',
+                                                          style: GoogleFonts.lato(
+                                                              textStyle: Theme.of(
+                                                                      context)
+                                                                  .textTheme
+                                                                  .bodyText1,
+                                                              fontSize: 15,
+                                                              color:
+                                                                  Colors.black,
+                                                              letterSpacing: 1),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
-                                                ],
-                                              ),
-                                            ],
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        //_showPicker(context);
+                                        // TODO Go to Profile Edit
+                                        Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                              pageBuilder: (_, __, ___) =>
+                                                  ViewProfile(
+                                                    result: result,
+                                                  )),
+                                        );
+                                      },
+                                      child: CircleAvatar(
+                                        radius: 50,
+                                        backgroundColor: Colors.white,
+                                        child: ClipOval(
+                                            child: ClipOval(
+                                                child: Container(
+                                          height: 350.0,
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(32.0),
+                                            child: result['photo'] == null
+                                                ? Placeholder()
+                                                : Image.network(
+                                                    result['photo'],
+                                                    fit: BoxFit.fill,
+                                                  ),
                                           ),
-                                        ),
+                                        ))),
                                       ),
-                                      GestureDetector(
-                                        onTap: () {
-                                          //_showPicker(context);
-                                          // TODO Go to Profile Edit
-                                        },
-                                        child: CircleAvatar(
-                                          radius: 50,
-                                          backgroundColor: Colors.white,
-                                          child: ClipOval(
-                                              child: ClipOval(
-                                                  child: Container(
-                                                    height: 350.0,
-                                                    child: ClipRRect(
-                                                      borderRadius:
-                                                      BorderRadius.circular(32.0),
-                                                      child: result.photo == null
-                                                          ? Placeholder()
-                                                          : Image.network(
-                                                        "https://picsum.photos/200/100?grayscale",
-                                                        //"https://connectiondatabase12.herokuapp.com/${result.photo}",
-                                                        fit: BoxFit.fill,
-                                                      ),
-                                                    ),
-                                                  ))),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -298,15 +258,19 @@ class _ProfileState extends State<Profile> {
                         Column(
                           children: [
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 1, 8, 8),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5, horizontal: 20),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
-                                    width: MediaQuery.of(context).size.width/2,
-                                    height: MediaQuery.of(context).size.height/18,
+                                    width:
+                                        MediaQuery.of(context).size.width / 2,
+                                    height:
+                                        MediaQuery.of(context).size.height / 18,
                                     decoration: BoxDecoration(
-                                        color: Colors.black54,
+                                        color: Color(0xff1c2229),
                                         borderRadius: BorderRadius.only(
                                           topRight: Radius.circular(5),
                                           topLeft: Radius.circular(5),
@@ -326,7 +290,7 @@ class _ProfileState extends State<Profile> {
                                             child: SingleChildScrollView(
                                               scrollDirection: Axis.horizontal,
                                               child: Text(
-                                                ' Email : ${result.email}',
+                                                ' Email : ${result['email']}',
                                                 style: GoogleFonts.lato(
                                                     textStyle: Theme.of(context)
                                                         .textTheme
@@ -346,29 +310,29 @@ class _ProfileState extends State<Profile> {
                                               onTap: () {
                                                 Scaffold.of(context)
                                                     .showSnackBar(SnackBar(
-                                                    content: Row(
-                                                      children: [
-                                                        Icon(
-                                                          LineIcons.coffee,
-                                                          color: Colors.white,
-                                                        ),
-                                                        Text(
-                                                          'Coffee',
-                                                          style: GoogleFonts.lato(
-                                                              textStyle:
+                                                        content: Row(
+                                                  children: [
+                                                    Icon(
+                                                      LineIcons.coffee,
+                                                      color: Colors.white,
+                                                    ),
+                                                    Text(
+                                                      'Coffee',
+                                                      style: GoogleFonts.lato(
+                                                          textStyle:
                                                               Theme.of(context)
                                                                   .textTheme
                                                                   .bodyText1,
-                                                              fontSize: 18,
-                                                              fontWeight:
+                                                          fontSize: 18,
+                                                          fontWeight:
                                                               FontWeight.bold,
-                                                              fontStyle:
+                                                          fontStyle:
                                                               FontStyle.normal,
-                                                              color: Colors.white,
-                                                              letterSpacing: 1),
-                                                        )
-                                                      ],
-                                                    )));
+                                                          color: Colors.white,
+                                                          letterSpacing: 1),
+                                                    )
+                                                  ],
+                                                )));
                                               },
                                               child: Icon(
                                                 Icons.edit,
@@ -382,10 +346,12 @@ class _ProfileState extends State<Profile> {
                                     ),
                                   ),
                                   Container(
-                                    width: MediaQuery.of(context).size.width/2.5,
-                                    height: MediaQuery.of(context).size.height/18,
+                                    width:
+                                        MediaQuery.of(context).size.width / 2.5,
+                                    height:
+                                        MediaQuery.of(context).size.height / 18,
                                     decoration: BoxDecoration(
-                                        color: Colors.black54,
+                                        color: Color(0xff1c2229),
                                         borderRadius: BorderRadius.only(
                                           topRight: Radius.circular(5),
                                           topLeft: Radius.circular(5),
@@ -394,16 +360,15 @@ class _ProfileState extends State<Profile> {
                                         )),
                                     child: Column(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                          MainAxisAlignment.spaceAround,
                                       children: [
                                         Padding(
                                           padding: EdgeInsets.all(2.0),
                                           child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
+                                                MainAxisAlignment.spaceAround,
                                             children: [
                                               Column(
-
                                                 children: [
                                                   Row(
                                                     children: [
@@ -416,13 +381,13 @@ class _ProfileState extends State<Profile> {
                                                         width: 5,
                                                       ),
                                                       Text(
-                                                        '${result.like}',
+                                                        '${result['like']}',
                                                         style: GoogleFonts.lato(
                                                             textStyle:
-                                                            Theme.of(
-                                                                context)
-                                                                .textTheme
-                                                                .bodyText1,
+                                                                Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyText1,
                                                             fontSize: 8,
                                                             fontStyle: FontStyle
                                                                 .normal,
@@ -435,32 +400,31 @@ class _ProfileState extends State<Profile> {
                                                     'ถูกใจ',
                                                     style: GoogleFonts.lato(
                                                         textStyle:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText1,
+                                                            Theme.of(context)
+                                                                .textTheme
+                                                                .bodyText1,
                                                         fontSize: 10,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                         fontStyle:
-                                                        FontStyle.normal,
+                                                            FontStyle.normal,
                                                         color: Colors.white,
                                                         letterSpacing: 1),
                                                   )
                                                 ],
                                               ),
-
                                               Column(
                                                 children: [
                                                   Row(
                                                     children: [
                                                       Text(
-                                                        '${result.follow}',
+                                                        '${result['follow']}',
                                                         style: GoogleFonts.lato(
                                                             textStyle:
-                                                            Theme.of(
-                                                                context)
-                                                                .textTheme
-                                                                .bodyText1,
+                                                                Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodyText1,
                                                             fontSize: 8,
                                                             fontStyle: FontStyle
                                                                 .normal,
@@ -473,20 +437,19 @@ class _ProfileState extends State<Profile> {
                                                     'ผู้ติดตาม',
                                                     style: GoogleFonts.lato(
                                                         textStyle:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText1,
+                                                            Theme.of(context)
+                                                                .textTheme
+                                                                .bodyText1,
                                                         fontSize: 10,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                         fontStyle:
-                                                        FontStyle.normal,
+                                                            FontStyle.normal,
                                                         color: Colors.white,
                                                         letterSpacing: 1),
                                                   )
                                                 ],
                                               ),
-
                                               Column(
                                                 children: [
                                                   RatingBar.builder(
@@ -498,9 +461,9 @@ class _ProfileState extends State<Profile> {
                                                     itemCount: 5,
                                                     itemBuilder: (context, _) =>
                                                         Icon(
-                                                          Icons.star,
-                                                          color: Colors.amber,
-                                                        ),
+                                                      Icons.star,
+                                                      color: Colors.amber,
+                                                    ),
                                                     onRatingUpdate: (rating) {
                                                       print(rating);
                                                     },
@@ -509,20 +472,19 @@ class _ProfileState extends State<Profile> {
                                                     'คะแนน',
                                                     style: GoogleFonts.lato(
                                                         textStyle:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .bodyText1,
+                                                            Theme.of(context)
+                                                                .textTheme
+                                                                .bodyText1,
                                                         fontSize: 10,
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                         fontStyle:
-                                                        FontStyle.normal,
+                                                            FontStyle.normal,
                                                         color: Colors.white,
                                                         letterSpacing: 1),
                                                   )
                                                 ],
                                               ),
-
                                             ],
                                           ),
                                         ),
@@ -535,7 +497,8 @@ class _ProfileState extends State<Profile> {
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 20),
                           child: Column(
                             children: [
                               Row(
@@ -543,8 +506,7 @@ class _ProfileState extends State<Profile> {
                                   Text(
                                     'การตั้งค่า',
                                     style: GoogleFonts.lato(
-                                        textStyle:
-                                        Theme.of(context).textTheme.bodyText1,
+                                        textStyle: TextStyle(color: Colors.white54),
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                         fontStyle: FontStyle.normal,
@@ -561,7 +523,7 @@ class _ProfileState extends State<Profile> {
                                 width: MediaQuery.of(context).size.width,
                                 height: 400,
                                 decoration: BoxDecoration(
-                                    color: Colors.black54,
+                                    color: Color(0xff1c2229),
                                     borderRadius: BorderRadius.only(
                                       topRight: Radius.circular(5),
                                       topLeft: Radius.circular(5),
@@ -582,11 +544,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'การอัปเดท',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -594,11 +558,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'V.10.0.3 (เสถียร)',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -628,11 +594,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'เปลี่ยนภาษา (Languages)',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -640,11 +608,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'ไทย',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -674,23 +644,27 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'สถานะ',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
                                                 Spacer(),
                                                 Text(
-                                                  '${result.status}',
+                                                  '${result['status']}',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -720,11 +694,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'บัญชีธนาคาร)',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -732,11 +708,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'เปิดใช้งาน',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.amber,
                                                       letterSpacing: 1),
                                                 ),
@@ -766,11 +744,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'ข้อมูลส่วนตัว',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -798,11 +778,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'ประวัติการเข้าสู่ระบบ',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -830,11 +812,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'ความปลอดภัย',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -862,11 +846,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'เปิดบัญชีนิติบุคคล',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -894,8 +880,7 @@ class _ProfileState extends State<Profile> {
                                   Text(
                                     'ศูนย์ดูแลลูกค้า',
                                     style: GoogleFonts.lato(
-                                        textStyle:
-                                        Theme.of(context).textTheme.bodyText1,
+                                        textStyle: TextStyle(color: Colors.white54),
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                         fontStyle: FontStyle.normal,
@@ -910,7 +895,7 @@ class _ProfileState extends State<Profile> {
                                 width: MediaQuery.of(context).size.width,
                                 height: 250,
                                 decoration: BoxDecoration(
-                                    color: Colors.black54,
+                                    color: Color(0xff1c2229),
                                     borderRadius: BorderRadius.only(
                                       topRight: Radius.circular(5),
                                       topLeft: Radius.circular(5),
@@ -919,7 +904,7 @@ class _ProfileState extends State<Profile> {
                                     )),
                                 child: Column(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     Padding(
                                         padding: const EdgeInsets.fromLTRB(
@@ -932,11 +917,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'ข้อเสนอแนะ',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -967,11 +954,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'คำถามที่พบบ่อย',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -1002,11 +991,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'เกี่ยวกับ Connection',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -1037,11 +1028,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'รายงานปัญหาการใช้งานแอปพลิเคชัน',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -1072,11 +1065,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'ติดต่อเจ้าหน้าที่',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -1106,8 +1101,7 @@ class _ProfileState extends State<Profile> {
                                   Text(
                                     'อื่น ๆ',
                                     style: GoogleFonts.lato(
-                                        textStyle:
-                                        Theme.of(context).textTheme.bodyText1,
+                                        textStyle: TextStyle(color: Colors.white54),
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                         fontStyle: FontStyle.normal,
@@ -1122,7 +1116,7 @@ class _ProfileState extends State<Profile> {
                                 width: MediaQuery.of(context).size.width,
                                 height: 150,
                                 decoration: BoxDecoration(
-                                    color: Colors.black54,
+                                    color: Color(0xff1c2229),
                                     borderRadius: BorderRadius.only(
                                       topRight: Radius.circular(5),
                                       topLeft: Radius.circular(5),
@@ -1131,7 +1125,7 @@ class _ProfileState extends State<Profile> {
                                     )),
                                 child: Column(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
+                                      MainAxisAlignment.spaceAround,
                                   children: [
                                     Padding(
                                         padding: const EdgeInsets.fromLTRB(
@@ -1144,11 +1138,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'ข้อกำหนดและเงื่ยนไข',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -1179,11 +1175,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'แชร์ Application',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -1214,11 +1212,13 @@ class _ProfileState extends State<Profile> {
                                                 Text(
                                                   'สนับสนุน',
                                                   style: GoogleFonts.lato(
-                                                      textStyle: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyText1,
+                                                      textStyle:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyText1,
                                                       fontSize: 16,
-                                                      fontStyle: FontStyle.normal,
+                                                      fontStyle:
+                                                          FontStyle.normal,
                                                       color: Colors.white,
                                                       letterSpacing: 1),
                                                 ),
@@ -1250,8 +1250,10 @@ class _ProfileState extends State<Profile> {
                                 child: TextButton(
                                     onPressed: () {
                                       // TODO Logout Button!
+                                      handleSignOut();
                                     },
-                                    child: Text('ออกจากระบบ',
+                                    child: Text(
+                                      'ออกจากระบบ',
                                       style: GoogleFonts.lato(
                                           textStyle: Theme.of(context)
                                               .textTheme
@@ -1259,8 +1261,8 @@ class _ProfileState extends State<Profile> {
                                           fontSize: 16,
                                           fontStyle: FontStyle.normal,
                                           color: Colors.white,
-                                          letterSpacing: 1),)
-                                ),
+                                          letterSpacing: 1),
+                                    )),
                                 width: 200,
                                 height: 40,
                                 decoration: BoxDecoration(
@@ -1278,51 +1280,112 @@ class _ProfileState extends State<Profile> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text('การเข้าสู่ระบบครั้งถัดไปจะถูกบันทึกไว้ใน',
+                                  Text(
+                                    'การเข้าสู่ระบบครั้งถัดไปจะถูกบันทึกไว้ใน',
                                     style: GoogleFonts.lato(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
+                                        textStyle: TextStyle(color: Colors.white54),
                                         fontSize: 10,
                                         fontStyle: FontStyle.normal,
-                                        color: Colors.black,
-                                        letterSpacing: 1),),
-                                  TextButton(onPressed: (){}, child: Text('ประวัติการเข้าสู่ระบบ',
+                                        color: Colors.white54,
+                                        letterSpacing: 1),
+                                  ),
+                                  TextButton(
+                                      onPressed: () {},
+                                      child: Text(
+                                        'ประวัติการเข้าสู่ระบบ',
+                                        style: GoogleFonts.lato(
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1,
+                                            fontSize: 10,
+                                            fontStyle: FontStyle.normal,
+                                            color: Colors.blue,
+                                            letterSpacing: 1),
+                                      )),
+                                  Text(
+                                    'โปรดระวัง',
                                     style: GoogleFonts.lato(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
+                                        textStyle: TextStyle(color: Colors.white54),
                                         fontSize: 10,
                                         fontStyle: FontStyle.normal,
-                                        color: Colors.blue,
-                                        letterSpacing: 1),)),
-                                  Text('โปรดระวัง',
-                                    style: GoogleFonts.lato(
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1,
-                                        fontSize: 10,
-                                        fontStyle: FontStyle.normal,
-                                        color: Colors.black,
-                                        letterSpacing: 1),),
+                                        color: Colors.white54,
+                                        letterSpacing: 1),
+                                  ),
                                 ],
                               ),
-                              Text('เปลี่ยนรหัสผ่านบ่อยครั้งดเพื่อป้องกันการโจรกรรมบัญชีของคุณ',
+                              Text(
+                                'เปลี่ยนรหัสผ่านบ่อยครั้งดเพื่อป้องกันการโจรกรรมบัญชีของคุณ',
                                 style: GoogleFonts.lato(
-                                    textStyle: Theme.of(context)
-                                        .textTheme
-                                        .bodyText1,
+                                    textStyle:TextStyle(color: Colors.white54),
                                     fontSize: 10,
                                     fontStyle: FontStyle.normal,
-                                    color: Colors.black,
-                                    letterSpacing: 1),),
+                                    color: Colors.white54,
+                                    letterSpacing: 1),
+                              ),
                             ],
                           ),
                         ),
                       ],
                     );
                   }
-                  return LinearProgressIndicator();
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Shimmer.fromColors(
+                      baseColor: Colors.grey.shade400,
+                      highlightColor: Colors.grey,
+                      enabled: _enabled,
+                      child: ListView.builder(
+                        shrinkWrap: true,
+                        itemBuilder: (_, __) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                width: 48.0,
+                                height: 48.0,
+                                color: Colors.white,
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      width: double.infinity,
+                                      height: 8.0,
+                                      color: Colors.white,
+                                    ),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 2.0),
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      height: 8.0,
+                                      color: Colors.white,
+                                    ),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 2.0),
+                                    ),
+                                    Container(
+                                      width: 40.0,
+                                      height: 8.0,
+                                      color: Colors.white,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        itemCount: 12,
+                      ),
+                    ),
+                  );
                 }),
             SizedBox(
               height: 20,

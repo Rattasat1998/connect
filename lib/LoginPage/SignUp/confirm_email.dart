@@ -25,6 +25,7 @@ class _ConfirmEmailState extends State<ConfirmEmail> {
     emailController = new TextEditingController(text: widget.email);
   }
 
+
   void sendOTP() async {
     EmailAuth.sessionName = "Verify Email";
     var res = await EmailAuth.sendOtp(receiverMail: widget.email);

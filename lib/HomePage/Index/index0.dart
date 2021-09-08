@@ -1,21 +1,15 @@
-import 'dart:convert';
-
-import 'package:connnection/Core/Model/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connnection/HomePage/Profile/profile.dart';
 import 'package:connnection/HomePage/ProviderFarm/navigator.dart';
 import 'package:connnection/HomePage/ProviderFarm/provider.dart';
 import 'package:connnection/LoginPage/Provider_user.dart';
-import 'package:connnection/Service/service.dart';
-import 'package:connnection/common/buttonProvider.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Index0 extends StatefulWidget {
   const Index0({Key? key}) : super(key: key);
@@ -26,6 +20,9 @@ class Index0 extends StatefulWidget {
 
 class _Index0State extends State<Index0> with SingleTickerProviderStateMixin {
   bool onClick = false;
+  SharedPreferences? prefs;
+  String? photoUrl = '';
+  var profile;
 
   int _currentIndex=0;
 
@@ -45,59 +42,33 @@ class _Index0State extends State<Index0> with SingleTickerProviderStateMixin {
   }
 
   late final MyProvider myProvider;
-  late String? token;
-   User? user = User();
-  late String? _bytesImage;
   bool isLoading = false;
-
-  /// image Profile
-  String? id;
-  Dio dio = new Dio();
-
-  getID() {
-    var geToken = context.read<MyProvider>();
-    token = geToken.user;
-    print(token);
-    AuthService().getProfile(token).then((value) {
-      setState(() {
-        id = value.data['id'];
-        print("ID = $id");
-        getUsers();
-      });
-
-      //myProvider.setId(id!);
-    });
-  }
-
-  Future getUsers() async {
-    final response =
-    await http.get(Uri.parse('https://connectiondatabase12.herokuapp.com/api/user/$id'));
-    String logResponse = response.statusCode.toString();
-    if (response.statusCode == 200) {
-      Map<String, dynamic> userMap = jsonDecode(response.body);
-
-      setState(() {
-        user = User.fromJson(userMap);
-        isLoading = true;
-        _bytesImage = user!.photo;
-        print('NAME : ${user!.name}');
-        print('Email : ${user!.email}');
-        print('Photo : $_bytesImage');
-        print('ResponseStatusCode: $logResponse'); // Check Status Code = 200
-      });
-      return null;
-    } else {
-      throw Exception('error :(');
-    }
-  }
 
   @override
   void initState() {
-    getID();
     myProvider = Provider.of<MyProvider>(context, listen: false);
-    // TODO: implement initState
     super.initState();
+    imageProfile();
   }
+  imageProfile() {
+    String? id = myProvider.id;
+    FirebaseFirestore.instance
+        .collection('users')
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        if(id == doc['id']){
+          setState(() {
+            photoUrl = doc['photo'];
+            profile = doc.data();
+            isLoading = true;
+          });
+        }
+      });
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<NavigationProvider>(context);
@@ -117,7 +88,7 @@ class _Index0State extends State<Index0> with SingleTickerProviderStateMixin {
                   children: [
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context);
+                        print('Please Logout');
                       },
                       child: Text('Connection',
                           style: TextStyle(
@@ -161,21 +132,20 @@ class _Index0State extends State<Index0> with SingleTickerProviderStateMixin {
                                     context,
                                     PageRouteBuilder(
                                         pageBuilder: (_, __, ___) => Profile(
-                                            name: user!.name,
-                                            address: user!.address,
-                                            id: user!.id)),
+                                          profile:profile,
+                                        )),
                                   );
                                 },
                                 child: Container(
                                   margin: EdgeInsets.all(2),
                                   child: CircleAvatar(
+                                    backgroundColor: Colors.transparent,
                                     radius: 25.0,
                                     child: isLoading != false
                                         ? ClipOval(
-                                        child: _bytesImage != null
+                                        child: photoUrl != null
                                             ? Image.network(
-                                          "https://picsum.photos/200/100?grayscale",
-                                          //"https://connectiondatabase12.herokuapp.com/$_bytesImage",
+                                          photoUrl!,
                                           width: 100,
                                           height: 100,
                                           fit: BoxFit.cover,
@@ -827,7 +797,6 @@ class _Index0State extends State<Index0> with SingleTickerProviderStateMixin {
                                 Row(
                                   children: [
                                     TextButton(
-
                                         onPressed: () {
                                           setState(() {
                                             provider.setNavigator(NavigatorItem.priceUp);

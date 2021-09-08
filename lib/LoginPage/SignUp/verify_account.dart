@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connnection/Core/Model/user.dart';
 import 'package:connnection/Service/service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../login_page.dart';
 
 class VerificationAccount extends StatefulWidget {
@@ -16,18 +20,15 @@ class VerificationAccount extends StatefulWidget {
 }
 
 class _VerificationState extends State<VerificationAccount> {
-
+  SharedPreferences? prefs;
   TextEditingController textEditingController = TextEditingController();
   StreamController<ErrorAnimationType>? errorController;
-  String photo = 'uploads/2021-08-10T07:27:39.502Zimage_picker_2D79E2BB-CE57-4818-9C5C-0DD3BFDD1C8E-5066-00000D832E3391B4.jpg';
-  String age = '0';
-  String address = 'กรุณาใส่ที่อยู่';
-  String follow = '0';
-  String like = '0';
-  String rate = '0';
-  String status = 'ผู้ใช้';
-  bool hasError = false;
-  String currentText = "";
+
+
+  bool isLoading = false;
+  bool isLoggedIn = false;
+  User? currentUser;
+
   final formKey = GlobalKey<FormState>();
   @override
   void initState() {
@@ -52,6 +53,84 @@ class _VerificationState extends State<VerificationAccount> {
     );
   }
 
+
+  signUp() async {
+    prefs = await SharedPreferences.getInstance();
+
+    this.setState(() {
+      isLoading = true;
+    });
+
+      final User? firebaseUser = (await
+      FirebaseAuth.instance.createUserWithEmailAndPassword(email: widget.email,password: widget.password)).user;
+
+      if (firebaseUser != null) {
+        // Check is already sign up
+        final QuerySnapshot result = await FirebaseFirestore.instance
+            .collection('users')
+            .where('id', isEqualTo: firebaseUser.uid)
+            .get();
+        final List<DocumentSnapshot> documents = result.docs;
+        if (documents.length == 0) {
+          // Update data to server if new user
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .set({
+            'id': firebaseUser.uid,
+            'name': widget.username,
+            'photo': 'https://cdn.pixabay.com/photo/2015/07/27/19/47/turtle-863336__340.jpg',
+            'age':'',
+            'email': firebaseUser.email,
+            'address': 'ยังไม่ได้เพิิ่มที่อยู่',
+            'password': widget.password,
+            'follow':'0',
+            'like': '0',
+            'rate': '0',
+            'status': '',
+            'createdAt': DateTime.now(),
+            'chattingWith': null
+          });
+
+          // Write data to local
+          currentUser = firebaseUser;
+          await prefs?.setString('id', currentUser!.uid);
+          await prefs?.setString('name', currentUser!.displayName ?? "");
+          await prefs?.setString('photo', currentUser!.photoURL ?? "");
+        } else {
+          DocumentSnapshot documentSnapshot = documents[0];
+          UserModel userModel = UserModel.fromDocument(documentSnapshot);
+          // Write data to local
+          await prefs?.setString('id', userModel.id);
+          await prefs?.setString('name', userModel.name);
+          await prefs?.setString('photo', userModel.photo);
+          await prefs?.setString('age', userModel.age);
+          await prefs?.setString('email', userModel.email);
+          await prefs?.setString('address', userModel.address);
+          await prefs?.setString('password', userModel.password);
+          await prefs?.setString('follow', userModel.follow);
+          await prefs?.setString('like', userModel.like);
+          await prefs?.setString('rate', userModel.rate);
+          await prefs?.setString('status', userModel.status);
+          await prefs?.setString('createdDate', userModel.createdDate);
+        }
+        Fluttertoast.showToast(msg: "Sign in success");
+        this.setState(() {
+          isLoading = false;
+          isLoggedIn = true;
+        });
+        //myProvider.setname(firebaseUser.uid);
+        Navigator.push(
+          context,
+          PageRouteBuilder(pageBuilder: (_, __, ___) => Login()),
+        );
+      } else {
+        Fluttertoast.showToast(msg: "Sign in fail");
+        this.setState(() {
+          isLoading = false;
+        });
+      }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -248,43 +327,18 @@ class _VerificationState extends State<VerificationAccount> {
                 blurRadius: 10,
               )
             ],
-            onCompleted: (v) {
+            onCompleted: (v) async {
               if(v == textEditingController.text){
-                AuthService().addUser(
-                    widget.username,
-                    photo,
-                    age,
-                    widget.email,
-                    address,
-                    widget.password,
-                    follow,
-                    like,
-                    rate,
-                    status
-                )
-                    .then((val){
-                  snackBar("สมัคร สมาชิกสำเร็จ");
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(pageBuilder: (_, __, ___) => Login()),
-                  );
-                });
-
+               signUp();
               }
               else{
                 print("Error to Register");
-
               }
               print("Completed");
-
             },
-            // onTap: () {
-            //   print("Pressed");
-            // },
             onChanged: (value) {
-              print(value);
               setState(() {
-                currentText = value;
+               // currentText = value;
               });
             },
             beforeTextPaste: (text) {
